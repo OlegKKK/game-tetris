@@ -8,6 +8,7 @@ public class Tetris extends JPanel{
 
     static Tetris tetris = new Tetris();
     static JFrame window = new JFrame();
+    static Board board = new Board();
 
     Tetris() {
 
@@ -23,6 +24,8 @@ public class Tetris extends JPanel{
         window.setSize(600, 600);
         window.setLocationRelativeTo(null);
         window.setResizable(false);
+        board.setLocation(10, 10);
+        tetris.add(board);
         window.setVisible(true);
     }
 }

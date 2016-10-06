@@ -11,11 +11,9 @@ public class Tetris extends JPanel{
     static Board board = new Board();
 
     Tetris() {
-
         super();
         setBackground(Color.DARK_GRAY);
         setLayout(null);
-
     }
 
     public static void main(String [] args) {

@@ -1,6 +1,6 @@
 package game.tetris;
 
-public class Timer {
+public class Figures {
     final static boolean[][][] TIMER =
             {
                     {

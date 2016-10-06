@@ -39,7 +39,7 @@ public class Tetris extends JPanel implements Runnable{
         while (start){
             startTime = System.nanoTime();
             board.run();
-            loopTime = startTime - System.nanoTime();
+            loopTime = startTime - System.nanoTime() - startTime;
             wait = scr - loopTime / 1000000;
             if (wait<=0) wait = 3;
             try {thread.sleep(scr);} catch (InterruptedException e) {e.printStackTrace();}

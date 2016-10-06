@@ -1,11 +1,13 @@
 package game.tetris;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Random;
 
-public class Board extends ACanvas implements MouseListener{
+public class Board extends ACanvas implements MouseListener, KeyListener{
 
     final static short SIZE = 25;
     final static short WIDTH = SIZE * 10;
@@ -15,16 +17,23 @@ public class Board extends ACanvas implements MouseListener{
     byte [][] tab = new byte[10][20];
     Random color = new Random();
 
+    Blocks blocks = new Blocks();
+    byte blocksX, blocksY;
+    boolean kLeft, kRight, kUp, kDown;
+
+
     Board() {
-        super(WIDTH, HEIGHT);addMouseListener(this);
-        tab [1][1]=1;
+        super(WIDTH, HEIGHT);addMouseListener(this); addKeyListener(this);
 
     }
 
     @Override
     public void drawImage() {
+        key();
         cmpBoard();
         printBoard();
+        printCube(blocksX, blocksY);
+
     }
 
     private void printBoard() {
@@ -37,6 +46,13 @@ public class Board extends ACanvas implements MouseListener{
 
 
             }
+    }
+
+    private void printCube(byte x, byte y, byte k) {
+        graphics.setColor(COLORS[k]);
+        graphics.fillRect(x*SIZE, y*SIZE, SIZE, SIZE);
+        graphics.setColor(Color.BLACK);
+        graphics.fillRect(x*SIZE, y*SIZE, SIZE, SIZE);
     }
 
     private boolean isLine(byte y) {
@@ -58,6 +74,13 @@ public class Board extends ACanvas implements MouseListener{
             if (tab[0][y]==8) downBoard(y);
             if (isLine(y)) setLine(y);
         }
+    }
+
+    private void printCube(byte x, byte y) {
+        for (byte tx=0; tx<4; tx++)
+            for (byte ty=0; ty<4; ty++)
+                if (blocks.tab[tx][ty]) printCube((byte)(x+tx), (byte)(y+ty), (byte)(blocks.akBlocks+1));
+
     }
 
     @Override
@@ -84,5 +107,40 @@ public class Board extends ACanvas implements MouseListener{
     @Override
     public void mouseExited(MouseEvent e) {
 
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int k = e.getKeyCode();
+        if (k==e.VK_UP) kUp = true;
+        if (k==e.VK_DOWN) kDown = true;
+        if (k==e.VK_LEFT) kLeft = true;
+        if (k==e.VK_RIGHT) kRight = true;
+
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        int k = e.getKeyCode();
+        if (k==e.VK_UP) kUp = false;
+        if (k==e.VK_DOWN) kDown = false;
+        if (k==e.VK_LEFT) kLeft = false;
+        if (k==e.VK_RIGHT) kRight = false;
+    }
+
+    private void key(){
+        if (kUp) blocks.rotation();
+        if (kLeft){
+            blocksX--;
+        }
+        if (kRight){
+            blocksX++;
+        }
     }
 }

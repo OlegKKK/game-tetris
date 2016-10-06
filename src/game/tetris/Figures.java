@@ -1,7 +1,7 @@
 package game.tetris;
 
 public class Figures {
-    final static boolean[][][] TIMER =
+    final static boolean[][][] FIGURES =
             {
                     {
                             {false, false, false, false},

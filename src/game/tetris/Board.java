@@ -95,7 +95,7 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        tab[e.getX()/SIZE] [e.getY()/SIZE] = 1;
+        tab[e.getX()/SIZE] [e.getY()/SIZE] = 2;
 
     }
 
@@ -114,6 +114,7 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
 
     }
 
+    @SuppressWarnings("static-acces")
     @Override
     public void keyPressed(KeyEvent e) {
         int k = e.getKeyCode();
@@ -124,7 +125,7 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
 
 
     }
-
+    @SuppressWarnings("static-acces")
     @Override
     public void keyReleased(KeyEvent e) {
         int k = e.getKeyCode();
@@ -133,14 +134,36 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
         if (k==e.VK_LEFT) kLeft = false;
         if (k==e.VK_RIGHT) kRight = false;
     }
+    private boolean isLineBlocks(byte x) {
+        for (byte y=0; y<4; y++) {if (blocks.tab [x][y]) return false;}
+        return true;
+    }
+    private boolean isBlocksBoard(byte x, byte y) {
+        for (byte xx=0; xx<4; xx++)
+        for (byte yy=0; yy<4; yy++)
+            if (blocks.tab[xx][yy] && tab [xx+x] [yy+y]>0) return false;
+        return true;
+    }
 
+    private boolean moveLeft() {
+        if (blocksX==0 && !isLineBlocks((byte) 0)) return false;
+        else if (blocksX==-1 && !isLineBlocks((byte) 1)) return false;
+        else if (blocksX==-2 && !isLineBlocks((byte) 2)) return false;
+        if(!isBlocksBoard((byte) (blocksX-1), blocksY)) return false;
+        return true;
+    }
+
+    private boolean moveRight() {
+        if (blocksX==6 && !isLineBlocks((byte) 3)) return false;
+        else if (blocksX==7 && !isLineBlocks((byte) 2)) return false;
+        else if (blocksX==8 && !isLineBlocks((byte) 1)) return false;
+        if(!isBlocksBoard((byte) (blocksX+1), blocksY)) return false;
+
+        return true;
+    }
     private void key(){
         if (kUp) blocks.rotation();
-        if (kLeft){
-            blocksX--;
-        }
-        if (kRight){
-            blocksX++;
-        }
+        if (kLeft && moveLeft())  blocksX--;
+        if (kRight && moveRight()) blocksX++;
     }
 }

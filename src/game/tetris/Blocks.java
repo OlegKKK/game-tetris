@@ -3,7 +3,7 @@ package game.tetris;
 public class Blocks {
 
    public boolean [][] tab = new boolean[4][4];
-    private boolean [] [] tabE = new boolean[4][4];
+    private boolean [][] tabE = new boolean[4][4];
     byte akBlocks;
 
     Blocks() {

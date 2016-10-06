@@ -32,7 +32,7 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
         key();
         cmpBoard();
         printBoard();
-        printCube(blocksX, blocksY);
+        printBlocks(blocksX, blocksY);
 
     }
 
@@ -52,7 +52,7 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
         graphics.setColor(COLORS[k]);
         graphics.fillRect(x*SIZE, y*SIZE, SIZE, SIZE);
         graphics.setColor(Color.BLACK);
-        graphics.fillRect(x*SIZE, y*SIZE, SIZE, SIZE);
+        graphics.fillRect(x*SIZE, y*SIZE, SIZE-1, SIZE-1);
     }
 
     private boolean isLine(byte y) {
@@ -76,7 +76,7 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
         }
     }
 
-    private void printCube(byte x, byte y) {
+    private void printBlocks(byte x, byte y) {
         for (byte tx=0; tx<4; tx++)
             for (byte ty=0; ty<4; ty++)
                 if (blocks.tab[tx][ty]) printCube((byte)(x+tx), (byte)(y+ty), (byte)(blocks.akBlocks+1));

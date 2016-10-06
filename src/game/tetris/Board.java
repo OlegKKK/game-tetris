@@ -42,18 +42,20 @@ public class Board extends ACanvas implements MouseListener{
     private boolean isLine(byte y) {
     for (byte x=0; x<10; x++) {if (tab[x][y]==0) return false;}
     return true;
-}
+    }
     private void setLine(byte y) {
         for (byte x=0; x<10; x++) tab[x][y]=8;
     }
     private void downBoard(byte y){
 
-
+    for (byte ty=y; ty>0; ty--)
+        for (byte x=0; x<10; x++) tab[x][ty]=tab[x][ty-1];
+    for (byte x=0; x<10; x++) tab[x][0]=0;
     }
 
     private void cmpBoard() {
         for (byte y=0; y<20; y++){
-
+            if (tab[0][y]==8) downBoard(y);
             if (isLine(y)) setLine(y);
         }
     }

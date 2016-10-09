@@ -14,9 +14,9 @@ public class Tetris extends JPanel implements Runnable{
     static Next next = new Next();
 
     boolean start = false;
-    short scr = 50;
+    short scr = 30;
 
-    static int line = 0, points = 0, level = 0;
+    static int line = 0, points = 0, level = 1;
     static JLabel lPoints, lLine, lLevel, lPoints2, lLine2, lLevel2;
     static Color kPoints = new Color(255, 128, 255);
     static Color kLine = new Color(255, 255, 0);
@@ -41,7 +41,8 @@ public class Tetris extends JPanel implements Runnable{
         window.setLocationRelativeTo(null);
         window.setResizable(false);
 
-        lPoints = new JLabel("0", JLabel.RIGHT);lPoints.setFont(ft1);
+        lPoints = new JLabel("0", JLabel.RIGHT);
+        lPoints.setForeground(kPoints); lPoints.setFont(ft1);
         lPoints.setBounds(270, 300, 100, 20);tetris.add(lPoints);
         lPoints2 = new JLabel("POINTS", JLabel.RIGHT);
         lPoints2.setBounds(270, 390, 100, 10);lPoints2.setForeground(kPoints);
@@ -71,16 +72,15 @@ public class Tetris extends JPanel implements Runnable{
     @Override
     public void run() {
         long wait, startTime, loopTime;
-        while (start){
+        while (start)
+        {
             startTime = System.nanoTime();
             board.run();
             next.run();
-            loopTime = startTime - System.nanoTime() - startTime;
+            loopTime = System.nanoTime() - startTime;
             wait = scr - loopTime / 1000000;
-            if (wait<=0) wait = 3;
-            try {thread.sleep(scr);} catch (InterruptedException e) {e.printStackTrace();}
-            System.out.println(scr+" > "+wait);
+            if (wait<=0) wait = 5;
+            try {thread.sleep(wait);} catch (InterruptedException e) {e.printStackTrace();}
         }
-
     }
 }

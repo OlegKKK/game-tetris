@@ -8,19 +8,23 @@ public class Sound {
     public boolean isPlay = false;
     private AudioClip clip;
 
-    Sound(String nameFile) {
+    Sound(String nameFile)
+    {
         clip = Applet.newAudioClip(Sound.class.getResource(nameFile));
     }
 
-    public void play() {
+    public void play()
+    {
         isPlay = true;
-        new Thread() {public void run(){clip.play();}}.start();
+        new Thread(){public void run(){clip.play();}}.start();
     }
-    public void stop() {
+    public void stop()
+    {
         isPlay = false;
         clip.stop();
     }
-    public void loop() {
+    public void loop()
+    {
         isPlay = true;
         clip.loop();
     }

@@ -17,9 +17,13 @@ public class Next extends ACanvas{
     @Override
     public void drawImage() { printBlocks();}
 
-    public void randomBlocks() { blocks = (byte) (rand.nextInt(6)+1);}
+    public void randomBlocks()
+    {
+        blocks = (byte) (rand.nextInt(6)+1);
+    }
 
-    private void printCube(byte x, byte y, byte k) {
+    private void printCube(byte x, byte y, byte k)
+    {
         graphics.setColor(Figures.COLORS[k]);
         graphics.fillRect(x*Figures.SIZE, y*Figures.SIZE, Figures.SIZE, Figures.SIZE);
         graphics.setColor(Color.BLACK);
@@ -28,9 +32,11 @@ public class Next extends ACanvas{
 
     private void printBlocks() {
         graphics.setColor(Figures.COLORS[0]);
-        graphics.fillRect(0, 0, 4*Figures.SIZE, 4*Figures.SIZE);
-        for (byte tx=0; tx<4; tx++);
-        for (byte ty=0; ty<4; ty++);
-        if (Figures.FIGURES[blocks][ty][tx]) printCube(tx, ty, (byte) (blocks+1));
+        graphics.fillRect(0, 0, 4 * Figures.SIZE, 4 * Figures.SIZE);
+        byte tx;
+        for (tx = 0; tx < 4; tx++) ;
+        byte ty;
+        for (ty = 0; ty < 4; ty++) ;
+        if (Figures.FIGURES[blocks][ty][tx]) printCube(tx, ty, (byte) (blocks + 1));
     }
 }

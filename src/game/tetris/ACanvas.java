@@ -1,15 +1,18 @@
 package game.tetris;
 
-import java.awt.*;
+import java.awt.Canvas;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 @SuppressWarnings("serial")
-public abstract class ACanvas extends Canvas{
+public abstract class ACanvas extends Canvas {
 
     BufferedImage image;
     Graphics2D graphics;
 
-    ACanvas(short width, short height) {
+    ACanvas(short width, short height)
+    {
         super();
         setSize(width, height);
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -18,15 +21,18 @@ public abstract class ACanvas extends Canvas{
 
     public abstract void drawImage();
 
-    private void onScreen() {
 
+    private void onScree()
+    {
         Graphics g = getGraphics();
         g.drawImage(image, 0, 0, null);
         g.dispose();
     }
 
-    public void run(){
+    public void run()
+    {
         drawImage();
-        onScreen();
+        onScree();
     }
+
 }

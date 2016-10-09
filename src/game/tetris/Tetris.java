@@ -10,6 +10,7 @@ public class Tetris extends JPanel implements Runnable{
     static JFrame window = new JFrame();
     static Thread thread = new Thread(tetris);
     static Board board = new Board();
+    static Next next = new Next();
 
     boolean start = false;
     short scr = 50;
@@ -29,6 +30,8 @@ public class Tetris extends JPanel implements Runnable{
         window.setResizable(false);
         board.setLocation(10, 10);
         tetris.add(board);
+        next.setLocation(300, 10);
+        tetris.add(next);
         window.setVisible(true);
         thread.start();
     }
@@ -39,6 +42,7 @@ public class Tetris extends JPanel implements Runnable{
         while (start){
             startTime = System.nanoTime();
             board.run();
+            next.run();
             loopTime = startTime - System.nanoTime() - startTime;
             wait = scr - loopTime / 1000000;
             if (wait<=0) wait = 3;

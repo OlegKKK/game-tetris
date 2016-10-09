@@ -77,8 +77,6 @@ public class Tetris extends JPanel implements Runnable {
         thread.start();
     }
 
-
-
     @SuppressWarnings("static-access")
     @Override
     public void run() {

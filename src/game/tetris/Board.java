@@ -11,8 +11,8 @@ import java.util.Random;
 @SuppressWarnings("serial")
 public class Board extends ACanvas implements MouseListener, KeyListener{
 
-    final static short WID = Figures.SIZE * 10;
-    final static short HEI = Figures.SIZE * 20;
+    final static short WIDTH = Figures.SIZE * 10;
+    final static short HEIDHT = Figures.SIZE * 20;
 
     byte[][] tab = new byte[12][22];
     Random rand = new Random();
@@ -31,7 +31,7 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
     Color sColors;
 
     Board() {
-        super(WID, HEI);addMouseListener(this);addKeyListener(this);
+        super(WIDTH, HEIDHT);addMouseListener(this);addKeyListener(this);
         sBlocks = new Sound("block.wav");
         sTurn = new Sound("turn.wav");
         sLine = new Sound("line.wav");
@@ -69,23 +69,21 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
             else
             {
                 graphics.setColor(Color.BLACK);
-                graphics.drawString("PAUZA", 91, 496);
+                graphics.drawString("PAUSE", 91, 496);
                 graphics.setColor(sColors);
-                graphics.drawString("PAUZA", 90, 495);
+                graphics.drawString("PAUSE", 90, 495);
             }
         }
         else
         {
             graphics.setColor(Figures.COLORS[0]);
-            graphics.fillRect(0, 0, WID, HEI);
+            graphics.fillRect(0, 0, WIDTH, HEIDHT);
             graphics.setColor(Color.BLACK);
             graphics.drawString("TETRIS", 91, 51);
-            graphics.drawString("TETRIS", 11, 71);
-            graphics.drawString("KLIK to START", 56, 496);
+            graphics.drawString("CLICK TO START", 56, 496);
             graphics.setColor(sColors);
             graphics.drawString("TETRIS", 90, 50);
-            graphics.drawString("TETRIS", 10, 70);
-            graphics.drawString("KLIK to START", 57, 495);
+            graphics.drawString("CLICK START", 57, 495);
 
         }
     }

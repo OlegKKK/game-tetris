@@ -1,6 +1,10 @@
 package game.tetris;
 
+import java.awt.*;
+
 public class Figures {
+    final static short SIZE = 25;
+    final static Color[] COLORS = {new Color(64,0,128), Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.ORANGE, Color.YELLOW, Color.WHITE };
     final static boolean[][][] FIGURES =
             {
                     {
@@ -50,6 +54,8 @@ public class Figures {
                             {true, true, false, false},
                             {false, true, true, false},
                             {false, false, false, false}
-                    },
+                    }
             };
+
+
 }

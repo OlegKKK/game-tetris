@@ -26,9 +26,7 @@ public abstract class ACanvas extends Canvas{
     }
 
     public void run(){
-
         drawImage();
         onScreen();
     }
-
 }

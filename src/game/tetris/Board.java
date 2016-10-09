@@ -7,79 +7,184 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Random;
 
-public class Board extends ACanvas implements MouseListener, KeyListener{
+@SuppressWarnings("serial")
+public class Board extends ACanvas implements MouseListener, KeyListener {
 
-    final static short SIZE = 25;
-    final static short WIDTH = SIZE * 10;
-    final static short HEIGHT = SIZE * 20;
-    final Color [] COLORS = {Color.GRAY, Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.MAGENTA, Color.ORANGE, Color.YELLOW, Color.WHITE};
+    final static short WIDTH = Figures.SIZE * 10;
+    final static short HEIGHT = Figures.SIZE * 20;
 
-    byte [][] tab = new byte[10][20];
-    Random color = new Random();
+    byte[][] tab = new byte[12][22];
+    Random rand = new Random();
 
     Blocks blocks = new Blocks();
     byte blocksX, blocksY;
     boolean kLeft, kRight, kUp, kDown;
+    short speed, speedMax;
+    boolean speedKey;
+    Sound sBlocks, sTurn, sLine;
+    boolean gamePlay, pause;
+    Color sColors;
 
 
     Board() {
-        super(WIDTH, HEIGHT);addMouseListener(this); addKeyListener(this);
+        super(WIDTH, HEIGHT);
+        addMouseListener(this);
+        addKeyListener(this);
+        sBlocks = new Sound("Blocks.waw");
+        sTurn = new Sound("Turn.waw");
+        sLine = new Sound("Line.waw");
+        for (byte x = 0; x < 12; x++) {
+            tab[x][0] = 1;
+            tab[x][21] = 1;
+        }
+        for (byte y = 0; y < 22; y++) {
+            tab[0][y] = 1;
+            tab[11][y] = 1;
+        }
+        blocksX = 4;
+        blocksY = 0;
+        speedMax = (short) (21 - Tetris.level);
+        gamePlay = false;
+        pause = false;
+        graphics.setFont(new Font("System", Font.BOLD, 18));
+        sColors = Color.WHITE;
 
     }
 
     @Override
     public void drawImage() {
-        key();
-        cmpBoard();
-        printBoard();
-        printBlocks(blocksX, blocksY);
+        if (gamePlay) {
+            key();
+            cmpBoard();
+            printBoard();
+            printBlocks(blocksX, blocksY);
+            if (!pause) {
+                if (speed < speedMax) speed++;
+                else {
+                    speed = 0;
+                    if (isBlocksBoard(blocksX, (byte) (blocksY + 1))) blocksY++;
+                    else {
+                        blocksEnd();
+                        newBlocks();
+                    }
+                }
+            } else {
+                graphics.setColor(Color.BLACK);
+                graphics.drawString("PAUSE", 91, 496);
+                graphics.setColor(sColors);
+                graphics.drawString("PAUSE", 90, 495);
+            }
+        } else {
+            graphics.setColor(Figures.COLORS[0]);
+            graphics.fillRect(0, 0, WIDTH, HEIGHT);
+            graphics.setColor(Color.BLACK);
+            graphics.drawString("TETRIS", 91, 51);
+            graphics.drawString("CLICK TO START", 56, 496);
+            graphics.setColor(sColors);
+            graphics.drawString("TETRIS", 90, 50);
+            graphics.drawString("CLICK TO START", 57, 495);
 
+        }
+    }
+
+    public void newBlocks() {
+
+        sBlocks.play();
+        blocksX = 4;
+        blocksY = 0;
+        speedMax = (short) (20 - Tetris.level);
+        if (speedMax < 0) speedMax = 0;
+        blocks.setBlocks(Tetris.next.blocks);
+        Tetris.next.randomBlocks();
+        Tetris.points+=blocks.akBlocks;
+        Tetris.lPoints.setText(String.valueOf(Tetris.points));
+    }
+
+    public void blocksEnd() {
+        for (byte xx=0; xx<4;
+             xx++)
+            for (byte yy=0; yy < 4; yy++)
+                if (blocks.tab[xx][yy]) tab[xx + blocksX][yy + blocksY] = (byte) (blocks.akBlocks + 1);
     }
 
     private void printBoard() {
-        for (byte x=0; x<10; x++)
-            for (byte y=0; y<20; y++) {
-                graphics.setColor(COLORS[tab[x] [y]]);
-                graphics.fillRect(x*SIZE, y*SIZE, SIZE, SIZE);
+        for (byte x = 1; x < 11; x++)
+            for (byte y = 1; y < 21; y++) {
+                graphics.setColor(Figures.COLORS[tab[x][y]]);
+                graphics.fillRect((x * Figures.SIZE) - Figures.SIZE, (y * Figures.SIZE) - Figures.SIZE, Figures.SIZE, Figures.SIZE);
                 graphics.setColor(Color.BLACK);
-                if (tab[x][y]>0) graphics.drawRect(x*SIZE, y*SIZE, SIZE-1, SIZE-1);
+                if (tab[x][y] > 0)
+                    graphics.drawRect((x * Figures.SIZE) - Figures.SIZE, (y * Figures.SIZE) - Figures.SIZE, Figures.SIZE - 1, Figures.SIZE - 1);
 
 
             }
     }
 
     private void printCube(byte x, byte y, byte k) {
-        graphics.setColor(COLORS[k]);
-        graphics.fillRect(x*SIZE, y*SIZE, SIZE, SIZE);
+        graphics.setColor(Figures.COLORS[k]);
+        graphics.fillRect((x * Figures.SIZE) - Figures.SIZE, (y * Figures.SIZE) - Figures.SIZE, Figures.SIZE, Figures.SIZE);
         graphics.setColor(Color.BLACK);
-        graphics.fillRect(x*SIZE, y*SIZE, SIZE-1, SIZE-1);
+        graphics.fillRect((x * Figures.SIZE) - Figures.SIZE, (y * Figures.SIZE) - Figures.SIZE, Figures.SIZE - 1, Figures.SIZE - 1);
     }
 
     private boolean isLine(byte y) {
-    for (byte x=0; x<10; x++) {if (tab[x][y]==0) return false;}
-    return true;
+        for (byte x = 1; x < 11; x++) {
+            if (tab[x][y] == 0) return false;
+        }
+        return true;
     }
-    private void setLine(byte y) {
-        for (byte x=0; x<10; x++) tab[x][y]=8;
-    }
-    private void downBoard(byte y){
 
-    for (byte ty=y; ty>0; ty--)
-        for (byte x=0; x<10; x++) tab[x][ty]=tab[x][ty-1];
-    for (byte x=0; x<10; x++) tab[x][0]=0;
+    private boolean isFull() {
+        for (byte x = 1; x < 11; x++) {
+            if (tab[x][1] != 0) return true;
+        }
+        return false;
+    }
+
+    private void setLine(byte y) {
+        sLine.play();
+        for (byte x = 1; x < 11; x++) tab[x][y] = 8;
+        Tetris.line++;
+        Tetris.lLine.setText(String.valueOf(Tetris.line));
+        Tetris.points += (Tetris.level * 10);
+        Tetris.lPoints.setText(String.valueOf(Tetris.points));
+        if (Tetris.line == (Tetris.level * Tetris.level)) {
+            Tetris.level++;
+            Tetris.lPoints.setText(String.valueOf(Tetris.level));
+            if (speedMax > 0) speedMax--;
+        }
+    }
+
+
+    private void downBoard(byte y) {
+
+        for (byte ty = y; ty > 0; ty--)
+            for (byte x = 1; x < 11; x++) tab[x][ty] = tab[x][ty - 1];
+        for (byte x = 1; x < 11; x++) tab[x][1] = 0;
     }
 
     private void cmpBoard() {
-        for (byte y=0; y<20; y++){
-            if (tab[0][y]==8) downBoard(y);
+        for (byte y = 1; y < 21; y++) {
+            if (tab[1][y] == 8) downBoard(y);
             if (isLine(y)) setLine(y);
+        }
+
+        if (isFull()) {
+            gamePlay = false;
+            Tetris.level = 1;
+            Tetris.line = 0;
+            Tetris.points = 0;
+            blocksX = 4;
+            blocksY = 0;
+            speedMax = (short) (21 - Tetris.level);
+            for (byte x = 1; x < 11; x++) for (byte y = 1; y < 21; y++) tab[x][y] = 0;
         }
     }
 
     private void printBlocks(byte x, byte y) {
         for (byte tx=0; tx<4; tx++)
             for (byte ty=0; ty<4; ty++)
-                if (blocks.tab[tx][ty]) printCube((byte)(x+tx), (byte)(y+ty), (byte)(blocks.akBlocks+1));
+                if (blocks.tab[tx][ty]) printCube((byte) (tx + x), (byte) (ty + y), (byte) (blocks.akBlocks + 1));
 
     }
 
@@ -90,12 +195,17 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        if (!gamePlay) {
+            gamePlay = true;
+            Tetris.lPoints.setText(String.valueOf(Tetris.points));
+            Tetris.lLine.setText(String.valueOf(Tetris.line));
+            Tetris.lLevel.setText(String.valueOf(Tetris.level));
+        } else
+            pause = !pause;
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        tab[e.getX()/SIZE] [e.getY()/SIZE] = 2;
 
     }
 
@@ -114,56 +224,57 @@ public class Board extends ACanvas implements MouseListener, KeyListener{
 
     }
 
-    @SuppressWarnings("static-acces")
+    @SuppressWarnings("static-access")
     @Override
     public void keyPressed(KeyEvent e) {
         int k = e.getKeyCode();
-        if (k==e.VK_UP) kUp = true;
-        if (k==e.VK_DOWN) kDown = true;
-        if (k==e.VK_LEFT) kLeft = true;
-        if (k==e.VK_RIGHT) kRight = true;
+        if (k == e.VK_UP) kUp = true;
+        if (k == e.VK_DOWN) kDown = true;
+        if (k == e.VK_LEFT) kLeft = true;
+        if (k == e.VK_RIGHT) kRight = true;
 
 
     }
-    @SuppressWarnings("static-acces")
+
+    @SuppressWarnings("static-access")
     @Override
     public void keyReleased(KeyEvent e) {
         int k = e.getKeyCode();
-        if (k==e.VK_UP) kUp = false;
-        if (k==e.VK_DOWN) kDown = false;
-        if (k==e.VK_LEFT) kLeft = false;
-        if (k==e.VK_RIGHT) kRight = false;
+        if (k == e.VK_UP) kUp = false;
+        if (k == e.VK_DOWN) kDown = false;
+        if (k == e.VK_LEFT) kLeft = false;
+        if (k == e.VK_RIGHT) kRight = false;
     }
-    private boolean isLineBlocks(byte x) {
-        for (byte y=0; y<4; y++) {if (blocks.tab [x][y]) return false;}
-        return true;
-    }
+
     private boolean isBlocksBoard(byte x, byte y) {
         for (byte xx=0; xx<4; xx++)
-        for (byte yy=0; yy<4; yy++)
-            if (blocks.tab[xx][yy] && tab [xx+x] [yy+y]>0) return false;
+            for (byte yy=0; yy<4; yy++)
+                if (blocks.tab[xx][yy] && tab[xx+x][yy+y]>0) return false;
         return true;
     }
 
     private boolean moveLeft() {
-        if (blocksX==0 && !isLineBlocks((byte) 0)) return false;
-        else if (blocksX==-1 && !isLineBlocks((byte) 1)) return false;
-        else if (blocksX==-2 && !isLineBlocks((byte) 2)) return false;
-        if(!isBlocksBoard((byte) (blocksX-1), blocksY)) return false;
+        if (!isBlocksBoard((byte) (blocksX - 1), blocksY)) return false;
         return true;
     }
 
     private boolean moveRight() {
-        if (blocksX==6 && !isLineBlocks((byte) 3)) return false;
-        else if (blocksX==7 && !isLineBlocks((byte) 2)) return false;
-        else if (blocksX==8 && !isLineBlocks((byte) 1)) return false;
-        if(!isBlocksBoard((byte) (blocksX+1), blocksY)) return false;
-
+        if (!isBlocksBoard((byte) (blocksX + 1), blocksY)) return false;
         return true;
     }
+
     private void key(){
-        if (kUp) blocks.rotation();
-        if (kLeft && moveLeft())  blocksX--;
-        if (kRight && moveRight()) blocksX++;
+
     }
+
+    {
+        speedKey = !speedKey;
+        if (kUp && speedKey) {blocks.turn();sTurn.play();if (!isBlocksBoard(blocksX, blocksY)) blocks.backRotation();}
+        if (kLeft && moveLeft()) blocksX--;
+        if (kRight && moveRight()) blocksX++;
+        if (kDown && speedMax > 0) {speedMax = 0;Tetris.points += 5;Tetris.lPoints.setText(String.valueOf(Tetris.points));}
+    }
+
+
 }
+
